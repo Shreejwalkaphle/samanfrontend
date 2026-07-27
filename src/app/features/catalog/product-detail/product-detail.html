@@ -1,0 +1,19 @@
+<div class="product-detail-container">
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  } @else if (product(); as p) {
+    <h1>{{ p.name }}</h1>
+    <p class="price">Rs. {{ p.price }}</p>
+    <p class="description">{{ p.description }}</p>
+    <p class="stock">
+      @if (p.stockQuantity > 0) {
+        In stock ({{ p.stockQuantity }} available)
+      } @else {
+        Out of stock
+      }
+    </p>
+    <p class="category">Category: {{ p.category.name }}</p>
+  }
+</div>
