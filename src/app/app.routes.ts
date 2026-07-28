@@ -24,4 +24,9 @@ export const routes: Routes = [
     path: 'cart',
     loadChildren: () => import('./features/cart/cart.routes').then((m) => m.CART_ROUTES),
   },
+  {
+    path: 'checkout',
+    loadChildren: () =>
+      import('./features/checkout/checkout.routes').then((m) => m.CHECKOUT_ROUTES),
+  },
 ];
