@@ -1,0 +1,22 @@
+<div class="cart-page-container">
+  <h1>Your Cart</h1>
+
+  @if (cartService.cart().items.length === 0) {
+    <p>Your cart is empty.</p>
+  } @else {
+    @for (item of cartService.cart().items; track item.id) {
+      <div class="cart-item">
+        <span>{{ item.productName }}</span>
+        <input
+          type="number"
+          min="1"
+          [value]="item.quantity"
+          (change)="onQuantityChange(item.id, $event)"
+        />
+        <span>Rs. {{ item.lineTotal }}</span>
+        <button (click)="onRemove(item.id)">Remove</button>
+      </div>
+    }
+    <p class="total">Total: Rs. {{ cartService.cart().total }}</p>
+  }
+</div>

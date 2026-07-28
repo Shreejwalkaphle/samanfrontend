@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -38,7 +38,27 @@ export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
 
   // A private, WRITABLE signal holding the token — never exposed directly.
-  #token = signal<string | null>(null);
+  /**
+   * TRADE-OFF, REVISED FROM ORIGINAL PURE IN-MEMORY DESIGN (documented
+   * change, not a silent one): token now persists to sessionStorage, not
+   * pure in-memory. Discovered via direct testing: a full browser navigation
+   * (typing a URL directly, or a page refresh) reboots the whole Angular app
+   * from scratch — pure in-memory storage meant a legitimately logged-in user
+   * got bounced back to login just from refreshing or typing a URL, which
+   * proved to be genuinely bad UX in practice, not just a theoretical
+   * concern.
+   *
+   * sessionStorage is a deliberate middle ground: still XSS-readable in
+   * principle (same theoretical risk category as localStorage — an injected
+   * script COULD read it), but auto-clears when the tab closes and never
+   * syncs across tabs, unlike localStorage which persists indefinitely and
+   * is shared across every tab for the same origin. A real, accepted
+   * downgrade from the original pure-in-memory design, made because the
+   * original design's UX cost turned out to be too high in practice — logged
+   * here so this trade-off is visible, not silently reverted without
+   * explanation.
+   */
+  #token = signal<string | null>(sessionStorage.getItem('auth_token'));
 
   // A public, READ-ONLY view of the same signal. Components can READ this
   // (e.g. to show/hide a "Log in" vs "Log out" button) but cannot call .set()
@@ -50,7 +70,16 @@ export class AuthService {
   // computed()-style derived state: true whenever a token exists. Any
   // component checking "is the user logged in?" reads THIS, not #token
   // directly — keeps the "what counts as logged in" definition in ONE place.
-  readonly isAuthenticated = signal(false);
+  // No longer a separately-tracked signal — deriving it directly from
+  // #token via computed() means there is only ONE source of truth for "is
+  // this user logged in," rather than two signals (#token and
+  // isAuthenticated) that could theoretically drift out of sync if a future
+  // edit updated one but forgot the other. This ALSO fixes today's bug at
+  // its root: since #token is now initialized from sessionStorage (above),
+  // isAuthenticated is correctly true immediately on app boot if a valid
+  // token was already in sessionStorage — no timing gap where the guard
+  // could see stale "false" state.
+  readonly isAuthenticated = computed(() => this.#token() !== null);
 
   constructor(private http: HttpClient) {}
 
@@ -66,10 +95,18 @@ export class AuthService {
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, body).pipe(
       tap((response) => {
-        this.#token.set(response.token);
-        this.isAuthenticated.set(true);
+        this.#setToken(response.token);
       })
     );
+  }
+
+  // Centralizes "what happens when we receive a token" in ONE place — both
+  // login() and register() now call this, rather than each independently
+  // repeating the same 2-line sequence (which is exactly how a future
+  // refactor could accidentally update one path but not the other).
+  #setToken(token: string): void {
+    this.#token.set(token);
+    sessionStorage.setItem('auth_token', token);
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
@@ -80,15 +117,14 @@ export class AuthService {
     // whatever component subscribes to this call.
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, body).pipe(
       tap((response) => {
-        this.#token.set(response.token);
-        this.isAuthenticated.set(true);
+        this.#setToken(response.token);
       })
     );
   }
 
   logout(): void {
     this.#token.set(null);
-    this.isAuthenticated.set(false);
+    sessionStorage.removeItem('auth_token');
   }
 
   // Used by the interceptor (Step 3) to read the current token when attaching
