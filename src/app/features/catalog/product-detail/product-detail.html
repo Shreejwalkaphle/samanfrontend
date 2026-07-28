@@ -15,5 +15,17 @@
       }
     </p>
     <p class="category">Category: {{ p.category.name }}</p>
+
+    @if (authService.isAuthenticated()) {
+      <button (click)="onAddToCart()" [disabled]="p.stockQuantity === 0">
+        Add to Cart
+      </button>
+    } @else {
+      <p><a routerLink="/auth/login">Log in</a> to purchase this item.</p>
+    }
+
+    @if (addToCartMessage()) {
+      <p class="cart-message">{{ addToCartMessage() }}</p>
+    }
   }
 </div>
