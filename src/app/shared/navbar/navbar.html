@@ -1,0 +1,20 @@
+<nav class="navbar">
+  <a routerLink="/catalog/products" class="brand">Saman</a>
+
+  <div class="nav-links">
+    <a routerLink="/catalog/products">Products</a>
+
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/cart">
+        Cart
+        @if (cartItemCount() > 0) {
+          ({{ cartItemCount() }})
+        }
+      </a>
+      <button (click)="onLogout()">Log out</button>
+    } @else {
+      <a routerLink="/auth/login">Log in</a>
+      <a routerLink="/auth/register">Register</a>
+    }
+  </div>
+</nav>

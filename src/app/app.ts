@@ -1,18 +1,11 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AuthService } from './core/services/auth.service';
-
+import { Navbar } from './shared/navbar/navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Navbar],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App {
-  // TEMPORARY — just to visually confirm the signal is updating after login.
-  // Will be removed once a real navbar/header component exists to show this
-  // properly.
-  authService = inject(AuthService);
-  protected readonly title = signal('saman-frontend');
-}
+export class App {}
