@@ -1,0 +1,29 @@
+<div class="admin-form-container">
+  <h2>Create Category</h2>
+
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+        <span class="error">Name is required (max 100 characters).</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description"></textarea>
+    </div>
+
+    @if (successMessage()) {
+      <div class="success">{{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="server-error">{{ errorMessage() }}</div>
+    }
+
+    <button type="submit" [disabled]="isSubmitting()">
+      @if (isSubmitting()) { Creating... } @else { Create Category }
+    </button>
+  </form>
+</div>

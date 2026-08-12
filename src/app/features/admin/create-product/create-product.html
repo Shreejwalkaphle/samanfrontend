@@ -1,0 +1,57 @@
+<div class="admin-form-container">
+  <h2>Create Product</h2>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="category">Category</label>
+      <select id="category" formControlName="categoryId">
+        <option value="" disabled>Select a category</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+      @if (productForm.get('categoryId')?.invalid && productForm.get('categoryId')?.touched) {
+        <span class="error">Please select a category.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="price">Price (NPR)</label>
+      <input id="price" type="number" step="0.01" formControlName="price" />
+      @if (productForm.get('price')?.invalid && productForm.get('price')?.touched) {
+        <span class="error">Price must be greater than 0.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="sku">SKU</label>
+      <input id="sku" type="text" formControlName="sku" />
+    </div>
+
+    <div class="field">
+      <label for="stock">Stock Quantity</label>
+      <input id="stock" type="number" formControlName="stockQuantity" />
+    </div>
+
+    @if (successMessage()) {
+      <div class="success">{{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="server-error">{{ errorMessage() }}</div>
+    }
+
+    <button type="submit" [disabled]="isSubmitting()">
+      @if (isSubmitting()) { Creating... } @else { Create Product }
+    </button>
+  </form>
+</div>

@@ -11,6 +11,10 @@
           ({{ cartItemCount() }})
         }
       </a>
+      <a routerLink="/account/orders">My Orders</a>
+      <a routerLink="/admin/categories/new">+ Category</a>
+      <a routerLink="/admin/products/new">+ Product</a>
+
       <button (click)="onLogout()">Log out</button>
     } @else {
       <a routerLink="/auth/login">Log in</a>

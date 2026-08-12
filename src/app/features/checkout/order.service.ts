@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Order } from './order.model';
+import { Order, ShippingAddress } from './order.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -15,9 +15,9 @@ export class OrderService {
    * the body is empty, since the backend derives everything from the
    * authenticated user's server-side cart.
    */
-  checkout(idempotencyKey: string): Observable<Order> {
+  checkout(idempotencyKey: string, shippingAddress: ShippingAddress): Observable<Order> {
     const headers = new HttpHeaders({ 'Idempotency-Key': idempotencyKey });
-    return this.http.post<Order>(`${this.apiUrl}/checkout`, {}, { headers });
+    return this.http.post<Order>(`${this.apiUrl}/checkout`, shippingAddress, { headers });
   }
 
   getOrders(): Observable<Order[]> {

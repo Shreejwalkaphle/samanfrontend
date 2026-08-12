@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { OrderService } from '../order.service';
 import { Order } from '../order.model';
 import { PaymentService } from '../../payment/payment.service';
@@ -17,12 +18,28 @@ type CheckoutStep = 'review' | 'selectGateway' | 'awaitingPayment' | 'complete';
 
 @Component({
   selector: 'app-checkout-page',
-  imports: [RouterLink],
+  imports: [RouterLink, ReactiveFormsModule],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.scss',
 })
 export class CheckoutPage {
   private orderService = inject(OrderService);
+  private fb = inject(FormBuilder);
+
+  // Address collection added for the Order & Delivery module's requirement
+  // that checkout captures a shipping destination — validators loosely
+  // mirror ShippingAddressRequest's backend @Valid rules (required fields
+  // match; exact length caps omitted client-side as non-critical UX,
+  // backend remains the real boundary, same principle as every other form
+  // in this project).
+  addressForm = this.fb.group({
+    addressLine1: ['', Validators.required],
+    addressLine2: [''],
+    city: ['', Validators.required],
+    district: ['', Validators.required],
+    postalCode: [''],
+    phone: ['', Validators.required],
+  });
   private paymentService = inject(PaymentService);
   cartService = inject(CartService); // public — template reads cart directly
 
@@ -44,10 +61,26 @@ export class CheckoutPage {
   private checkoutIdempotencyKey = crypto.randomUUID();
 
   placeOrder(): void {
+    if (this.addressForm.invalid) {
+      this.addressForm.markAllAsTouched();
+      this.errorMessage.set('Please fill in all required shipping fields.');
+      return;
+    }
+
     this.isProcessing.set(true);
     this.errorMessage.set(null);
 
-    this.orderService.checkout(this.checkoutIdempotencyKey).subscribe({
+    const raw = this.addressForm.getRawValue();
+    const shippingAddress = {
+      addressLine1: raw.addressLine1!,
+      addressLine2: raw.addressLine2 || null,
+      city: raw.city!,
+      district: raw.district!,
+      postalCode: raw.postalCode || null,
+      phone: raw.phone!,
+    };
+
+    this.orderService.checkout(this.checkoutIdempotencyKey, shippingAddress).subscribe({
       next: (order) => {
         this.order.set(order);
         this.step.set('selectGateway');

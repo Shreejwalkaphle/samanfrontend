@@ -29,4 +29,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/checkout/checkout.routes').then((m) => m.CHECKOUT_ROUTES),
   },
+  {
+    path: 'account',
+    loadChildren: () => import('./features/account/account.routes').then((m) => m.ACCOUNT_ROUTES),
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+  },
 ];
