@@ -1,0 +1,32 @@
+<div class="order-history-container">
+  <h1>Your Orders</h1>
+
+  @if (isLoading()) {
+    <p>Loading your orders...</p>
+  } @else if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  } @else if (orders().length === 0) {
+    <p>You haven't placed any orders yet. <a routerLink="/catalog/products">Start shopping</a>.</p>
+  } @else {
+    @for (order of orders(); track order.id) {
+      <div class="order-card">
+        <div class="order-header">
+          <span class="order-id">Order #{{ order.id.slice(0, 8) }}</span>
+          <span class="order-status" [class]="'status-' + order.status.toLowerCase()">
+            {{ order.status }}
+          </span>
+        </div>
+        <p class="order-date">Placed: {{ order.createdAt | date: 'medium' }}</p>
+
+        @for (item of order.items; track item.productId) {
+          <div class="order-item">
+            <span>{{ item.productName }} &times; {{ item.quantity }}</span>
+            <span>Rs. {{ item.priceAtPurchase * item.quantity }}</span>
+          </div>
+        }
+
+        <p class="order-total">Total: Rs. {{ order.totalAmount }}</p>
+      </div>
+    }
+  }
+</div>

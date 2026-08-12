@@ -19,6 +19,35 @@
           </div>
         }
         <p class="total">Total: Rs. {{ cartService.cart().total }}</p>
+
+        <h3>Shipping Address</h3>
+        <form [formGroup]="addressForm">
+          <div class="field">
+            <label>Address Line 1</label>
+            <input type="text" formControlName="addressLine1" />
+          </div>
+          <div class="field">
+            <label>Address Line 2 (optional)</label>
+            <input type="text" formControlName="addressLine2" />
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input type="text" formControlName="city" />
+          </div>
+          <div class="field">
+            <label>District</label>
+            <input type="text" formControlName="district" />
+          </div>
+          <div class="field">
+            <label>Postal Code (optional)</label>
+            <input type="text" formControlName="postalCode" />
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="text" formControlName="phone" />
+          </div>
+        </form>
+
         <button (click)="placeOrder()" [disabled]="isProcessing()">
           @if (isProcessing()) {
             Placing order...
