@@ -18,6 +18,18 @@
         </div>
         <p class="order-date">Placed: {{ order.createdAt | date: 'medium' }}</p>
 
+        @if (order.trackingNumber) {
+          <div class="tracking-info">
+            <p>Tracking #: {{ order.trackingNumber }}</p>
+            @if (order.shippedAt) {
+              <p>Shipped: {{ order.shippedAt | date: 'medium' }}</p>
+            }
+            @if (order.deliveredAt) {
+              <p>Delivered: {{ order.deliveredAt | date: 'medium' }}</p>
+            }
+          </div>
+        }
+
         @for (item of order.items; track item.productId) {
           <div class="order-item">
             <span>{{ item.productName }} &times; {{ item.quantity }}</span>

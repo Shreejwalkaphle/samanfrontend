@@ -1,0 +1,136 @@
+.checkout-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  animation: fadeUp 0.5s ease;
+}
+
+.checkout-container > h1 {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+}
+
+.checkout-container > .error {
+  background: rgba(217, 122, 108, 0.12);
+  border: 1px solid rgba(217, 122, 108, 0.3);
+  color: var(--danger);
+  font-size: var(--fs-sm);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-5);
+}
+
+.checkout-container h2 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+}
+
+.checkout-container h3 {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: var(--space-6) 0 var(--space-4);
+}
+
+.checkout-container > p {
+  color: var(--text-muted);
+}
+
+.checkout-container > p a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- Review step --- */
+.review-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.total {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  padding: var(--space-4) 0;
+  margin-bottom: var(--space-2);
+}
+
+.checkout-container form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field label {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.checkout-container > button {
+  width: 100%;
+  padding: 14px;
+}
+
+/* --- Gateway selection step --- */
+.checkout-container button {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--space-3);
+  padding: 14px;
+  text-align: center;
+}
+
+.checkout-container button[disabled][title] {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-faint);
+  border: 1px solid var(--glass-border);
+}
+
+/* --- Awaiting payment step --- */
+.simulated-note {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  font-style: italic;
+  margin: var(--space-2) 0 var(--space-5);
+}
+
+.checkout-container a[href][target="_blank"] {
+  display: inline-block;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-bottom: var(--space-5);
+}
+
+/* --- Complete step --- */
+.checkout-container h2 {
+  text-transform: capitalize;
+}
+
+@media (max-width: 600px) {
+  .checkout-container {
+    padding: var(--space-6) var(--space-4);
+  }
+}
