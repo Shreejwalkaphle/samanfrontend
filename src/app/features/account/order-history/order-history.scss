@@ -1,0 +1,116 @@
+.order-history-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  animation: fadeUp 0.5s ease;
+}
+
+.order-history-container > h1 {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+}
+
+.order-history-container > p {
+  color: var(--text-muted);
+}
+
+.order-history-container > p a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.order-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-glass);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.order-id {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+}
+
+.order-status {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.status-pending {
+  background: rgba(224, 180, 90, 0.15);
+  color: var(--warning);
+  border: 1px solid rgba(224, 180, 90, 0.3);
+}
+.status-paid,
+.status-completed,
+.status-success {
+  background: rgba(111, 191, 143, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(111, 191, 143, 0.3);
+}
+.status-cancelled,
+.status-failed {
+  background: rgba(217, 122, 108, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(217, 122, 108, 0.3);
+}
+
+.order-date {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+  margin-bottom: var(--space-4);
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.order-item:last-of-type {
+  border-bottom: none;
+}
+
+.order-total {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--glass-border);
+  text-align: right;
+  font-weight: 600;
+  font-size: var(--fs-md);
+}
+
+@media (max-width: 600px) {
+  .order-history-container {
+    padding: var(--space-6) var(--space-4);
+  }
+  .order-header {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+}

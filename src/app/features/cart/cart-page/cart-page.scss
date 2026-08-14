@@ -1,0 +1,98 @@
+.cart-page-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5);
+  animation: fadeUp 0.5s ease;
+}
+
+.cart-page-container > h1 {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+}
+
+.cart-page-container > p {
+  color: var(--text-muted);
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-3);
+  animation: fadeUp 0.4s ease;
+}
+
+.cart-item > span:first-child {
+  font-size: var(--fs-base);
+  font-weight: 500;
+}
+
+.cart-item input[type="number"] {
+  width: 64px;
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.cart-item > span:nth-child(3) {
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 90px;
+  text-align: right;
+}
+
+.cart-item button {
+  background: rgba(217, 122, 108, 0.12);
+  border: 1px solid rgba(217, 122, 108, 0.3);
+  color: var(--danger);
+  font-size: var(--fs-xs);
+  padding: 8px 14px;
+}
+.cart-item button:hover:not(:disabled) {
+  background: rgba(217, 122, 108, 0.22);
+}
+
+.cart-page-container > .total {
+  text-align: right;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  margin: var(--space-5) 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+}
+
+.cart-page-container > a {
+  display: block;
+  text-align: center;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  padding: 13px;
+  border-radius: var(--radius-md);
+  transition: background var(--dur-fast) var(--ease);
+}
+.cart-page-container > a:hover {
+  background: var(--accent-hover);
+}
+
+@media (max-width: 600px) {
+  .cart-page-container {
+    padding: var(--space-6) var(--space-4);
+  }
+  .cart-item {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    text-align: left;
+  }
+  .cart-item > span:nth-child(3) {
+    text-align: left;
+  }
+}
