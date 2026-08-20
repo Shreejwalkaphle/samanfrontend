@@ -20,6 +20,10 @@ export class Register {
   registerForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
+    // Roadmap Addendum v2 §1.2: opt-in seller registration. Defaults to
+    // false (regular customer) — matches backend's RegisterRequest.asSeller
+    // default behavior exactly.
+    asSeller: [false],
   });
 
   isSubmitting = signal(false);
@@ -34,9 +38,9 @@ export class Register {
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
-    const { email, password } = this.registerForm.getRawValue();
+    const { email, password, asSeller } = this.registerForm.getRawValue();
 
-    this.authService.register(email!, password!).subscribe({
+    this.authService.register(email!, password!, asSeller!).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         // Registration logs the user in immediately (same as the backend's

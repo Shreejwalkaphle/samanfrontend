@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { CategorySummary, Product } from '../catalog/product.model';
+import { SellerApplication } from './seller-application.model';
 
 interface CreateCategoryRequest {
   name: string;
@@ -42,5 +43,17 @@ export class AdminService {
 
   getRootCategories(): Observable<CategorySummary[]> {
     return this.http.get<CategorySummary[]>(`${environment.apiUrl}/categories/root`);
+  }
+
+  getPendingSellers(): Observable<SellerApplication[]> {
+    return this.http.get<SellerApplication[]>(`${environment.apiUrl}/admin/sellers/pending`);
+  }
+
+  approveSeller(userId: string): Observable<SellerApplication> {
+    return this.http.patch<SellerApplication>(`${environment.apiUrl}/admin/sellers/${userId}/approve`, {});
+  }
+
+  rejectSeller(userId: string): Observable<SellerApplication> {
+    return this.http.patch<SellerApplication>(`${environment.apiUrl}/admin/sellers/${userId}/reject`, {});
   }
 }

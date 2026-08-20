@@ -12,8 +12,11 @@
         }
       </a>
       <a routerLink="/account/orders">My Orders</a>
-      <a routerLink="/admin/categories/new">+ Category</a>
-      <a routerLink="/admin/products/new">+ Product</a>
+      @if (authService.isAdmin()) {
+        <a routerLink="/admin/categories/new">+ Category</a>
+        <a routerLink="/admin/products/new">+ Product</a>
+        <a routerLink="/admin/sellers/pending">Pending Sellers</a>
+      }
 
       <button (click)="onLogout()">Log out</button>
     } @else {
