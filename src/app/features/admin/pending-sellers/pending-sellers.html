@@ -1,0 +1,21 @@
+<div class="pending-sellers-container">
+  <h2>Pending Seller Applications</h2>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (applications().length === 0) {
+    <p>No pending applications.</p>
+  } @else {
+    @for (app of applications(); track app.id) {
+      <div class="application-row">
+        <span>{{ app.email }}</span>
+        <button (click)="onApprove(app.id)">Approve</button>
+        <button (click)="onReject(app.id)">Reject</button>
+      </div>
+    }
+  }
+</div>

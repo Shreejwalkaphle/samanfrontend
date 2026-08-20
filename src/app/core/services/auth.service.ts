@@ -81,6 +81,15 @@ export class AuthService {
   // could see stale "false" state.
   readonly isAuthenticated = computed(() => this.#token() !== null);
 
+  // Roadmap Addendum v2 §3: role information for the currently logged-in
+  // user, fetched via /api/auth/me (not decoded from the JWT — the JWT
+  // deliberately carries no roles, matching the backend's own
+  // fresh-from-DB-every-request design). Read-only signal — only
+  // loadCurrentUser() (below) may set it.
+  #roles = signal<string[]>([]);
+  readonly roles = this.#roles.asReadonly();
+  readonly isAdmin = computed(() => this.#roles().includes('ADMIN'));
+
   constructor(private http: HttpClient) {}
 
   // Matches AuthController.register() on the backend — that endpoint returns
@@ -90,8 +99,8 @@ export class AuthService {
   // exact same tap() side-effect logic here keeps "what happens when we
   // receive a token" defined in exactly the two places that can legitimately
   // produce one, both following the same pattern.
-  register(email: string, password: string): Observable<AuthResponse> {
-    const body: LoginRequest = { email, password }; // same shape as login's request
+  register(email: string, password: string, asSeller: boolean): Observable<AuthResponse> {
+    const body = { email, password, asSeller };
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, body).pipe(
       tap((response) => {
@@ -107,6 +116,7 @@ export class AuthService {
   #setToken(token: string): void {
     this.#token.set(token);
     sessionStorage.setItem('auth_token', token);
+    this.loadCurrentUser();
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
@@ -124,6 +134,7 @@ export class AuthService {
 
   logout(): void {
     this.#token.set(null);
+    this.#roles.set([]);
     sessionStorage.removeItem('auth_token');
   }
 
@@ -131,5 +142,13 @@ export class AuthService {
   // it to outgoing requests.
   getToken(): string | null {
     return this.#token();
+  }
+
+  loadCurrentUser(): void {
+    if (!this.isAuthenticated()) return;
+    this.http.get<{ roles: string[] }>(`${this.apiUrl}/me`).subscribe({
+      next: (profile) => this.#roles.set(profile.roles),
+      error: () => this.#roles.set([]),
+    });
   }
 }

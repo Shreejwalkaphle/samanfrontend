@@ -21,6 +21,16 @@
       }
     </div>
 
+    <div class="field checkbox-field">
+      <label>
+        <input type="checkbox" formControlName="asSeller" />
+        I want to sell products on Saman
+      </label>
+      <p class="hint">
+        Seller accounts require admin approval before you can list products.
+      </p>
+    </div>
+
     @if (errorMessage()) {
       <div class="server-error">{{ errorMessage() }}</div>
     }

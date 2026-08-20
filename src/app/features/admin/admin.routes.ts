@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { CreateCategory } from './create-category/create-category';
 import { CreateProduct } from './create-product/create-product';
+import { PendingSellers } from './pending-sellers/pending-sellers';
 import { authGuard } from '../../core/guards/auth.guard';
 
 /**
@@ -23,6 +24,11 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'products/new',
     component: CreateProduct,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'sellers/pending',
+    component: PendingSellers,
     canActivate: [authGuard]
   }
 ];
