@@ -89,11 +89,6 @@ export class AuthService {
   #roles = signal<string[]>([]);
   readonly roles = this.#roles.asReadonly();
   readonly isAdmin = computed(() => this.#roles().includes('ADMIN'));
-  #sellerStatus = signal<string | null>(null);
-  readonly sellerStatus = this.#sellerStatus.asReadonly();
-  readonly isApprovedSeller = computed(
-    () => this.#roles().includes('SELLER') && this.#sellerStatus() === 'APPROVED'
-  );
 
   constructor(private http: HttpClient) {}
 
@@ -104,8 +99,8 @@ export class AuthService {
   // exact same tap() side-effect logic here keeps "what happens when we
   // receive a token" defined in exactly the two places that can legitimately
   // produce one, both following the same pattern.
-  register(email: string, password: string, asSeller: boolean): Observable<AuthResponse> {
-    const body = { email, password, asSeller };
+  register(email: string, password: string): Observable<AuthResponse> {
+    const body = { email, password };
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, body).pipe(
       tap((response) => {
@@ -140,7 +135,6 @@ export class AuthService {
   logout(): void {
     this.#token.set(null);
     this.#roles.set([]);
-    this.#sellerStatus.set(null);
     sessionStorage.removeItem('auth_token');
   }
 
@@ -152,14 +146,12 @@ export class AuthService {
 
   loadCurrentUser(): void {
     if (!this.isAuthenticated()) return;
-    this.http.get<{ roles: string[]; sellerStatus: string | null }>(`${this.apiUrl}/me`).subscribe({
+    this.http.get<{ roles: string[] }>(`${this.apiUrl}/me`).subscribe({
       next: (profile) => {
         this.#roles.set(profile.roles);
-        this.#sellerStatus.set(profile.sellerStatus);
       },
       error: () => {
         this.#roles.set([]);
-        this.#sellerStatus.set(null);
       },
     });
   }

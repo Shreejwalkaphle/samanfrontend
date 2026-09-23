@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Navbar } from './navbar';
-import { provideRouter } from '@angular/router';
+import { PendingShops } from './pending-shops';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('Navbar', () => {
-  let component: Navbar;
-  let fixture: ComponentFixture<Navbar>;
+describe('PendingShops', () => {
+  let component: PendingShops;
+  let fixture: ComponentFixture<PendingShops>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Navbar],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      imports: [PendingShops],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Navbar);
+    fixture = TestBed.createComponent(PendingShops);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

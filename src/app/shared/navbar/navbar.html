@@ -12,13 +12,10 @@
         }
       </a>
       <a routerLink="/account/orders">My Orders</a>
-      @if (authService.isApprovedSeller()) {
-        <a routerLink="/seller/products">Seller Products</a>
-      }
+      <a routerLink="/shop">My Shop</a>
       @if (authService.isAdmin()) {
         <a routerLink="/admin/categories/new">+ Category</a>
-        <a routerLink="/admin/products/new">+ Product</a>
-        <a routerLink="/admin/sellers/pending">Pending Sellers</a>
+        <a routerLink="/admin/shops/pending">Pending Shops</a>
       }
 
       <button (click)="onLogout()">Log out</button>

@@ -2,22 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CategorySummary, Product } from '../catalog/product.model';
-import { SellerApplication } from './seller-application.model';
+import { CategorySummary } from '../catalog/product.model';
+import { ShopApplication } from './shop.model';
 
 interface CreateCategoryRequest {
   name: string;
   description: string;
   parentId: string | null;
-}
-
-interface CreateProductRequest {
-  categoryId: string;
-  name: string;
-  description: string;
-  price: number;
-  sku: string;
-  stockQuantity: number;
 }
 
 /**
@@ -37,23 +28,19 @@ export class AdminService {
     return this.http.post<CategorySummary>(`${environment.apiUrl}/categories`, request);
   }
 
-  createProduct(request: CreateProductRequest): Observable<Product> {
-    return this.http.post<Product>(`${environment.apiUrl}/products`, request);
-  }
-
   getRootCategories(): Observable<CategorySummary[]> {
     return this.http.get<CategorySummary[]>(`${environment.apiUrl}/categories/root`);
   }
 
-  getPendingSellers(): Observable<SellerApplication[]> {
-    return this.http.get<SellerApplication[]>(`${environment.apiUrl}/admin/sellers/pending`);
+  getPendingShops(): Observable<{ content: ShopApplication[] }> {
+    return this.http.get<{ content: ShopApplication[] }>(`${environment.apiUrl}/admin/shops/pending`);
   }
 
-  approveSeller(userId: string): Observable<SellerApplication> {
-    return this.http.patch<SellerApplication>(`${environment.apiUrl}/admin/sellers/${userId}/approve`, {});
+  approveShop(shopId: string): Observable<ShopApplication> {
+    return this.http.patch<ShopApplication>(`${environment.apiUrl}/admin/shops/${shopId}/approve`, {});
   }
 
-  rejectSeller(userId: string): Observable<SellerApplication> {
-    return this.http.patch<SellerApplication>(`${environment.apiUrl}/admin/sellers/${userId}/reject`, {});
+  rejectShop(shopId: string, reason: string): Observable<ShopApplication> {
+    return this.http.patch<ShopApplication>(`${environment.apiUrl}/admin/shops/${shopId}/reject`, { reason });
   }
 }
