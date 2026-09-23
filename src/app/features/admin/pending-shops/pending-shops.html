@@ -1,5 +1,5 @@
-<div class="pending-sellers-container">
-  <h2>Pending Seller Applications</h2>
+<div class="pending-shops-container">
+  <h2>Pending Shop Applications</h2>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
@@ -12,7 +12,7 @@
   } @else {
     @for (app of applications(); track app.id) {
       <div class="application-row">
-        <span>{{ app.email }}</span>
+        <span><strong>{{ app.name }}</strong> · {{ app.addressLine1 }}, {{ app.city }} · {{ app.phone }}</span>
         <button (click)="onApprove(app.id)">Approve</button>
         <button (click)="onReject(app.id)">Reject</button>
       </div>

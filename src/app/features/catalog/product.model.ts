@@ -22,7 +22,8 @@ export interface Product {
   sku: string;
   stockQuantity: number;
   active: boolean;
-  sellerId: string | null;
+  shopId: string;
+  shopName: string;
   category: CategorySummary;
 }
 

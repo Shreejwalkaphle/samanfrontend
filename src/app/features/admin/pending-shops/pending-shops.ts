@@ -1,17 +1,17 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { AdminService } from '../admin.service';
-import { SellerApplication } from '../seller-application.model';
+import { ShopApplication } from '../shop.model';
 
 @Component({
-  selector: 'app-pending-sellers',
+  selector: 'app-pending-shops',
   imports: [],
-  templateUrl: './pending-sellers.html',
-  styleUrl: './pending-sellers.scss',
+  templateUrl: './pending-shops.html',
+  styleUrl: './pending-shops.scss',
 })
-export class PendingSellers implements OnInit {
+export class PendingShops implements OnInit {
   private adminService = inject(AdminService);
 
-  applications = signal<SellerApplication[]>([]);
+  applications = signal<ShopApplication[]>([]);
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
@@ -21,9 +21,9 @@ export class PendingSellers implements OnInit {
 
   private loadPending(): void {
     this.isLoading.set(true);
-    this.adminService.getPendingSellers().subscribe({
-      next: (apps) => {
-        this.applications.set(apps);
+    this.adminService.getPendingShops().subscribe({
+      next: (page) => {
+        this.applications.set(page.content);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -33,22 +33,24 @@ export class PendingSellers implements OnInit {
         // handling: GlobalExceptionHandler's messages are always
         // intentional and client-safe, hiding them behind a generic string
         // loses useful, correct information for no security benefit.
-        this.errorMessage.set(err.error?.message ?? 'Failed to load pending sellers.');
+        this.errorMessage.set(err.error?.message ?? 'Failed to load pending shops.');
         this.isLoading.set(false);
       },
     });
   }
 
-  onApprove(userId: string): void {
-    this.adminService.approveSeller(userId).subscribe({
+  onApprove(shopId: string): void {
+    this.adminService.approveShop(shopId).subscribe({
       next: () => this.loadPending(), // refresh list — approved user should
                                         // disappear from the PENDING list
       error: (err) => this.errorMessage.set(err.error?.message ?? 'Approval failed.'),
     });
   }
 
-  onReject(userId: string): void {
-    this.adminService.rejectSeller(userId).subscribe({
+  onReject(shopId: string): void {
+    const reason = prompt('Reason for rejecting this shop?')?.trim();
+    if (!reason) return;
+    this.adminService.rejectShop(shopId, reason).subscribe({
       next: () => this.loadPending(),
       error: (err) => this.errorMessage.set(err.error?.message ?? 'Rejection failed.'),
     });
