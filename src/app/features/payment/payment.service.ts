@@ -30,4 +30,8 @@ export class PaymentService {
   confirm(paymentId: string): Observable<PaymentResponse> {
     return this.http.post<PaymentResponse>(`${this.apiUrl}/${paymentId}/confirm`, {});
   }
+
+  completeEsewa(data: string): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/esewa/complete`, { data });
+  }
 }

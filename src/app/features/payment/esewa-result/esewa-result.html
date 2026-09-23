@@ -1,0 +1,18 @@
+<main class="payment-result" [class.success]="state() === 'success'" [class.failure]="state() === 'failure'">
+  <section class="result-card">
+    <p class="eyebrow">eSewa payment</p>
+    <h1>
+      @if (state() === 'verifying') { Verifying payment }
+      @else if (state() === 'success') { Payment complete }
+      @else { Payment not completed }
+    </h1>
+    <p>{{ message() }}</p>
+
+    @if (state() !== 'verifying') {
+      <div class="actions">
+        <a routerLink="/account/orders">View orders</a>
+        <a routerLink="/catalog/products" class="secondary">Continue shopping</a>
+      </div>
+    }
+  </section>
+</main>
