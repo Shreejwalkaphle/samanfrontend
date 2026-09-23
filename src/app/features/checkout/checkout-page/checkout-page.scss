@@ -88,6 +88,25 @@
   font-weight: 500;
 }
 
+.location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.quote-card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid rgba(79, 209, 197, 0.35);
+  border-radius: var(--radius-md);
+  background: rgba(79, 209, 197, 0.08);
+}
+
+.quote-card span,
+.quote-card small { color: var(--text-muted); }
+
 .checkout-container > button {
   width: 100%;
   padding: 14px;
@@ -133,4 +152,5 @@
   .checkout-container {
     padding: var(--space-6) var(--space-4);
   }
+  .location-grid { grid-template-columns: 1fr; }
 }

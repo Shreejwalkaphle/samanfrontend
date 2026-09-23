@@ -1,4 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { OrderService } from '../order.service';
@@ -6,6 +8,8 @@ import { Order } from '../order.model';
 import { PaymentService } from '../../payment/payment.service';
 import { GatewayType, PaymentResponse } from '../../payment/payment.model';
 import { CartService } from '../../cart/cart.service';
+import { DeliveryQuoteService } from '../delivery-quote.service';
+import { DeliveryQuote } from '../delivery-quote.model';
 
 /**
  * A simple state machine driving which part of the checkout flow is shown.
@@ -18,13 +22,15 @@ type CheckoutStep = 'review' | 'selectGateway' | 'awaitingPayment' | 'complete';
 
 @Component({
   selector: 'app-checkout-page',
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, DatePipe],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.scss',
 })
 export class CheckoutPage {
   private orderService = inject(OrderService);
   private fb = inject(FormBuilder);
+  private deliveryQuoteService = inject(DeliveryQuoteService);
+  private destroyRef = inject(DestroyRef);
 
   // Address collection added for the Order & Delivery module's requirement
   // that checkout captures a shipping destination — validators loosely
@@ -35,10 +41,12 @@ export class CheckoutPage {
   addressForm = this.fb.group({
     addressLine1: ['', Validators.required],
     addressLine2: [''],
-    city: ['', Validators.required],
-    district: ['', Validators.required],
+    city: ['Biratnagar', Validators.required],
+    district: ['Morang', Validators.required],
     postalCode: [''],
     phone: ['', Validators.required],
+    latitude: [null as number | null, [Validators.required, Validators.min(-90), Validators.max(90)]],
+    longitude: [null as number | null, [Validators.required, Validators.min(-180), Validators.max(180)]],
   });
   private paymentService = inject(PaymentService);
   cartService = inject(CartService); // public — template reads cart directly
@@ -46,6 +54,7 @@ export class CheckoutPage {
   step = signal<CheckoutStep>('review');
   order = signal<Order | null>(null);
   payment = signal<PaymentResponse | null>(null);
+  deliveryQuote = signal<DeliveryQuote | null>(null);
   errorMessage = signal<string | null>(null);
   isProcessing = signal(false);
 
@@ -60,10 +69,57 @@ export class CheckoutPage {
    */
   private checkoutIdempotencyKey = crypto.randomUUID();
 
+  constructor() {
+    this.addressForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.deliveryQuote.set(null);
+    });
+  }
+
+  useCurrentLocation(): void {
+    if (!navigator.geolocation) {
+      this.errorMessage.set('Location is not supported by this browser. Enter coordinates manually.');
+      return;
+    }
+    this.isProcessing.set(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        this.addressForm.patchValue({ latitude: coords.latitude, longitude: coords.longitude });
+        this.isProcessing.set(false);
+      },
+      () => {
+        this.errorMessage.set('Location permission was denied. Enter the delivery pin coordinates manually.');
+        this.isProcessing.set(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  }
+
+  requestDeliveryQuote(): void {
+    if (this.addressForm.invalid) {
+      this.addressForm.markAllAsTouched();
+      this.errorMessage.set('Complete the address and delivery pin before requesting a quote.');
+      return;
+    }
+    const raw = this.addressForm.getRawValue();
+    this.isProcessing.set(true);
+    this.errorMessage.set(null);
+    this.deliveryQuoteService.create({
+      latitude: raw.latitude!, longitude: raw.longitude!, city: raw.city!, district: raw.district!,
+    }).subscribe({
+      next: quote => { this.deliveryQuote.set(quote); this.isProcessing.set(false); },
+      error: err => { this.errorMessage.set(err.error?.message ?? 'Could not calculate delivery.'); this.isProcessing.set(false); },
+    });
+  }
+
   placeOrder(): void {
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
       this.errorMessage.set('Please fill in all required shipping fields.');
+      return;
+    }
+    const quote = this.deliveryQuote();
+    if (!quote) {
+      this.errorMessage.set('Request a delivery quote before placing the order.');
       return;
     }
 
@@ -78,6 +134,9 @@ export class CheckoutPage {
       district: raw.district!,
       postalCode: raw.postalCode || null,
       phone: raw.phone!,
+      deliveryQuoteId: quote.id,
+      latitude: raw.latitude!,
+      longitude: raw.longitude!,
     };
 
     this.orderService.checkout(this.checkoutIdempotencyKey, shippingAddress).subscribe({

@@ -46,9 +46,33 @@
             <label>Phone</label>
             <input type="text" formControlName="phone" />
           </div>
+          <div class="location-grid">
+            <div class="field">
+              <label>Latitude</label>
+              <input type="number" step="0.000001" formControlName="latitude" />
+            </div>
+            <div class="field">
+              <label>Longitude</label>
+              <input type="number" step="0.000001" formControlName="longitude" />
+            </div>
+          </div>
+          <button type="button" class="secondary" (click)="useCurrentLocation()" [disabled]="isProcessing()">
+            Use my current location
+          </button>
         </form>
 
-        <button (click)="placeOrder()" [disabled]="isProcessing()">
+        @if (deliveryQuote(); as quote) {
+          <section class="quote-card">
+            <strong>{{ quote.zoneName }}</strong>
+            <span>{{ quote.distanceKm }} km · Delivery Rs. {{ quote.fee }}</span>
+            <span>Total Rs. {{ cartService.cart().total + quote.fee }}</span>
+            <small>Valid until {{ quote.expiresAt | date:'shortTime' }}</small>
+          </section>
+        } @else {
+          <button (click)="requestDeliveryQuote()" [disabled]="isProcessing()">Get delivery quote</button>
+        }
+
+        <button (click)="placeOrder()" [disabled]="isProcessing() || !deliveryQuote()">
           @if (isProcessing()) {
             Placing order...
           } @else {
