@@ -16,4 +16,6 @@ export interface PaymentResponse {
   amount: number;
   currency: string;
   redirectUrl: string | null;
+  redirectMethod: 'GET' | 'POST' | null;
+  redirectFields: Record<string, string>;
 }

@@ -114,6 +114,10 @@ export class CheckoutPage {
     this.paymentService.initiate(currentOrder.id, gateway, paymentIdempotencyKey).subscribe({
       next: (payment) => {
         this.payment.set(payment);
+        if (payment.gateway === 'ESEWA') {
+          this.submitGatewayForm(payment);
+          return;
+        }
         this.step.set('awaitingPayment');
         this.isProcessing.set(false);
       },
@@ -122,6 +126,29 @@ export class CheckoutPage {
         this.isProcessing.set(false);
       },
     });
+  }
+
+  private submitGatewayForm(payment: PaymentResponse): void {
+    if (!payment.redirectUrl || payment.redirectMethod !== 'POST') {
+      this.errorMessage.set('eSewa returned an invalid payment request.');
+      this.isProcessing.set(false);
+      return;
+    }
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = payment.redirectUrl;
+
+    Object.entries(payment.redirectFields).forEach(([name, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
   }
 
   /**
